@@ -1,0 +1,68 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <ctime>
+
+void insertionSort(std::vector<int>& valores) {
+	for (int i = 1; i < valores.size(); i++) { 
+		
+		int j = i;
+	
+		while (j > 0 && valores[j] < valores[j-1]) {
+			int aux = valores[j];
+			valores[j] = valores[j - 1];
+			valores[j - 1] = aux;
+			j -= 1;
+		}
+	
+	}	
+}
+
+int main() {
+    std::vector<int> numeros;
+
+    std::ifstream arquivo("dtaleat10kuni1.txt");
+
+    if (!arquivo.is_open()) {
+        std::cerr << "Nao foi possível abrir o arquivo" << std::endl;
+        return 1; 
+    }
+
+    int numero;
+    while (arquivo >> numero) {
+        numeros.push_back(numero);
+    }
+
+    arquivo.close();
+
+    int numIteracoes = 10; 
+    double tempoTotal = 0;
+
+    for (int i = 0; i < numIteracoes; i++) {
+        
+        clock_t cronometroInicio = clock();
+
+        insertionSort(numeros);
+
+        clock_t cronometroFinal = clock();
+
+        double tempoConsumido = static_cast<double>(cronometroFinal - cronometroInicio) / CLOCKS_PER_SEC * 1000.0;
+
+        tempoTotal += tempoConsumido;
+    }
+
+    double mediaTempo = tempoTotal / numIteracoes;
+    
+    
+	//Para exibir os numeros apos a ordenacao
+	//for (int i = 0; i < numeros.size(); i++){
+    	//printf("%i-", numeros[i]);
+	//}
+
+
+    std::cout << "Media de tempo levado pelo Insertion Sort em " << numIteracoes << " iteracoes: " << mediaTempo << " milissegundos" << std::endl;
+
+    return 0; 
+}
