@@ -1,0 +1,98 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <ctime>
+
+void mergeSort(std::vector<int>& numeros, int posicaoInicio, int posicaoFim) {
+    int i, j, k, metadeTamanho, *vetorTemp;
+    if(posicaoInicio == posicaoFim) return;
+    metadeTamanho = (posicaoInicio + posicaoFim ) / 2;
+
+    mergeSort(numeros, posicaoInicio, metadeTamanho);
+    mergeSort(numeros, metadeTamanho + 1, posicaoFim);
+
+    i = posicaoInicio;
+    j = metadeTamanho + 1;
+    k = 0;
+    vetorTemp = (int *) malloc(sizeof(int) * (posicaoFim - posicaoInicio + 1));
+
+    while(i < metadeTamanho + 1 || j  < posicaoFim + 1) {
+        if (i == metadeTamanho + 1 ) { 
+            vetorTemp[k] = numeros[j];
+            j++;
+            k++;
+        }
+        else {
+            if (j == posicaoFim + 1) {
+                vetorTemp[k] = numeros[i];
+                i++;
+                k++;
+            }
+            else {
+                if (numeros[i] < numeros[j]) {
+                    vetorTemp[k] = numeros[i];
+                    i++;
+                    k++;
+                }
+                else {
+                    vetorTemp[k] = numeros[j];
+                    j++;
+                    k++;
+                }
+            }
+        }
+
+    }
+    for(i = posicaoInicio; i <= posicaoFim; i++) {
+        numeros[i] = vetorTemp[i - posicaoInicio];
+    }
+    free(vetorTemp);
+}
+
+int main() {
+    std::vector<int> numeros;
+
+    std::ifstream arquivo("dtaleat10kuni1.txt");
+
+    if (!arquivo.is_open()) {
+        std::cerr << "Nao foi possivel abrir o arquivo" << std::endl;
+        return 1; 
+    }
+
+    int numero;
+    while (arquivo >> numero) {
+        numeros.push_back(numero);
+    }
+
+    arquivo.close();
+
+	
+    int numIteracoes = 10; 
+    double tempoTotal = 0;
+
+    for (int i = 0; i < numIteracoes; i++) { 
+
+        clock_t cronometroInicio = clock();
+
+        mergeSort(numeros, 0, numeros.size() - 1);
+
+        clock_t cronometroFinal = clock();
+
+        double tempoConsumido = static_cast<double>(cronometroFinal - cronometroInicio) / CLOCKS_PER_SEC * 1000.0;
+
+        tempoTotal += tempoConsumido;
+    }
+
+    double mediaTempo = tempoTotal / numIteracoes;
+	
+	//Para exibir os numeros apos a ordenacao    
+    //for (int i = 0; i < numeros.size(); i++){
+    	//printf("%i-", numeros[i]);
+	//}
+
+    std::cout << "Media de tempo levado pelo Merge Sort em " << numIteracoes << " iteracoes: " << mediaTempo << " milissegundos" << std::endl;
+
+    return 0; 
+}
