@@ -1,0 +1,91 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <ctime>
+#include <stack>
+
+void quickSort(std::vector<int>& numeros, int menor, int maior) {
+    std::stack<int> stack;
+    stack.push(menor);
+    stack.push(maior);
+
+    while (!stack.empty()) {
+        maior = stack.top();
+        stack.pop();
+        menor = stack.top();
+        stack.pop();
+
+        if (menor < maior) {
+            int pivo = numeros[maior];
+            int i = menor - 1;
+
+            for (int j = menor; j < maior; j++) {
+                if (numeros[j] < pivo) {
+                    i++;
+                    std::swap(numeros[i], numeros[j]);
+                }
+            }
+
+            std::swap(numeros[i + 1], numeros[maior]);
+            int pivoIndex = i + 1;
+
+            if (pivoIndex - 1 > menor) {
+                stack.push(menor);
+                stack.push(pivoIndex - 1);
+            }
+
+            if (pivoIndex + 1 < maior) {
+                stack.push(pivoIndex + 1);
+                stack.push(maior);
+            }
+        }
+    }
+}
+ 
+ int main() {
+    std::vector<int> numeros;
+
+    std::ifstream arquivo("dtaleat10kuni1.txt");
+
+    if (!arquivo.is_open()) {
+        std::cerr << "Nao foi possível abrir o arquivo" << std::endl;
+        return 1; 
+    }
+
+    int numero;
+    while (arquivo >> numero) {
+        numeros.push_back(numero);
+    }
+
+    arquivo.close();
+
+    int numIteracoes = 10; 
+    double tempoTotal = 0;
+
+    for (int i = 0; i < numIteracoes; i++) { 
+
+        clock_t cronometroInicio = clock();
+
+        quickSort(numeros, 0, numeros.size()-1);
+
+        clock_t cronometroFinal = clock();
+
+        double tempoConsumido = static_cast<double>(cronometroFinal - cronometroInicio) / CLOCKS_PER_SEC * 1000.0;
+
+        tempoTotal += tempoConsumido;
+    }
+
+    double mediaTempo = tempoTotal / numIteracoes;
+    
+    //Para exibir os numeros apos a ordenacao
+    //for (int i = 0; i < numeros.size(); i++){
+    	//printf("%i-", numeros[i]);
+	//}
+
+
+    std::cout << "Media de tempo levado pelo Quick Sort em " << numIteracoes << " iteracoes: " << mediaTempo << " milissegundos" << std::endl;
+
+    return 0; 
+}
